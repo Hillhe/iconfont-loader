@@ -1,5 +1,5 @@
 {
-  "name": "iconfont-loader",
+  "name": "iconfont-pull",
   "version": "0.0.1",
   "description": "iconfont图标包下载器",
   "main": "dist/index.js",

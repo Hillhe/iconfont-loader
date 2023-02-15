@@ -1,13 +1,13 @@
-# iconfont-loader
+# iconfont-pull
 
 iconfont图标包下载工具
 
 ## 安装
 
 ```bash
-pnpm i iconfont-loader
-# yarn add iconfont-loader
-# npm i iconfont-loader
+pnpm i iconfont-pull
+# yarn add iconfont-pull
+# npm i iconfont-pull
 ```
 
 ## 使用
@@ -15,13 +15,13 @@ pnpm i iconfont-loader
 **下载字体包**
 
 ```ts
-import { download } from 'iconfont-loader'
+import { download } from 'iconfont-pull'
 
 download({
   pid: '123456',
   token: 'abc123',
   destDir: './fonts',
-  cssFileName: 'iconfont-loader.css'
+  cssFileName: 'iconfont-pull.css'
 })
 ```
 
@@ -37,7 +37,7 @@ download({
 **下载SVG包**
 
 ```ts
-import { downloadSvgs } from 'iconfont-loader'
+import { downloadSvgs } from 'iconfont-pull'
 
 downloadSvgs({
   pid: '123456',
