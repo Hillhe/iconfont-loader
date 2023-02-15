@@ -5,11 +5,12 @@ import config from './config'
 import { parseAttrs } from './parser'
 import { downloadAndUnzip } from './core'
 
-const TEMP = config.tempDir
+const TEMP = (dir) => path.resolve(__dirname, config.tempDir + dir)
 
 interface BaseOptions {
   token: string,
   pid: string,
+  pName: string
 }
 
 interface DownloadOptions extends BaseOptions {
@@ -28,21 +29,21 @@ interface SvgParsed {
 }
 
 function isUsefulFile(filename: string) {
-  return ['.css', '.woff', '.woff2', '.svg', '.ttf'].indexOf(path.extname(filename)) >= 0
-    && /^iconfont/.test(filename)
+  return ['.css', '.woff', '.woff2', '.svg', '.ttf'].indexOf(path.extname(filename)) >= 0 && /^iconfont/.test(filename)
 }
 
 export async function download(options: DownloadOptions) {
-  rmSync(TEMP, { force: true, recursive: true })
-  mkdirSync(TEMP)
+  rmSync(TEMP(options.pName), { force: true, recursive: true })
+  mkdirSync(TEMP(options.pName))
   const dir = await downloadAndUnzip(options.token, options.pid)
   readdirSync(dir, { withFileTypes: true })
     .filter(o => o.isFile() && isUsefulFile(o.name))
     .forEach(o => {
-      fs.copyFileSync(path.resolve(dir, o.name), path.resolve(options.destDir, options.cssFileName ?? o.name))
+      const copyPath = path.extname(o.name).toLowerCase() === '.css' ? options.cssFileName : o.name
+      fs.copyFileSync(path.resolve(dir, o.name), path.resolve(options.destDir, copyPath))
     })
   // 删掉tmp目录
-  rmSync(TEMP, { force: true, recursive: true })
+  rmSync(TEMP(options.pName), { force: true, recursive: true })
 }
 
 const JS_SVG_RE = /window\.\w+?\s*=\s*'(.*?)'/
@@ -66,8 +67,8 @@ function parseSvgs(content: string): SvgParsed[] {
 }
 
 async function loadSvgs(options: BaseOptions) {
-  rmSync(TEMP, { force: true, recursive: true })
-  mkdirSync(TEMP)
+  rmSync(TEMP(options.pName), { force: true, recursive: true })
+  mkdirSync(TEMP(options.pName))
   const dir = await downloadAndUnzip(options.token, options.pid)
   const svgJsPath = path.resolve(dir, 'iconfont.js')
   if (!existsSync(svgJsPath)) throw new Error('不存在iconfont.js文件！')
@@ -86,5 +87,5 @@ export async function downloadSvgs(options: DownloadSvgsOptions) {
     const filename = options.filename ? options.filename(svg.id) : svg.id
     writeFileSync(path.resolve(options.destDir, `${filename}.svg`), svg.content, { encoding: 'utf-8' })
   })
-  rmSync(TEMP, { force: true, recursive: true })
+  rmSync(TEMP(options.pName), { force: true, recursive: true })
 }
