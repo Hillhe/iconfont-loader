@@ -5,7 +5,7 @@ import config from './config'
 import { parseAttrs } from './parser'
 import { downloadAndUnzip } from './core'
 
-const TEMP = (dir) => path.resolve(__dirname, config.tempDir + dir)
+const TEMP = (dir: string): string => path.resolve(__dirname, config.tempDir + dir)
 
 interface BaseOptions {
   token: string,
