@@ -35,7 +35,7 @@ function isUsefulFile(filename: string) {
 export async function download(options: DownloadOptions) {
   rmSync(TEMP(options.pName), { force: true, recursive: true })
   mkdirSync(TEMP(options.pName))
-  const dir = await downloadAndUnzip(options.token, options.pid)
+  const dir = await downloadAndUnzip(options.token, options.pid, options.pName)
   readdirSync(dir, { withFileTypes: true })
     .filter(o => o.isFile() && isUsefulFile(o.name))
     .forEach(o => {
@@ -69,7 +69,7 @@ function parseSvgs(content: string): SvgParsed[] {
 async function loadSvgs(options: BaseOptions) {
   rmSync(TEMP(options.pName), { force: true, recursive: true })
   mkdirSync(TEMP(options.pName))
-  const dir = await downloadAndUnzip(options.token, options.pid)
+  const dir = await downloadAndUnzip(options.token, options.pid, options.pName)
   const svgJsPath = path.resolve(dir, 'iconfont.js')
   if (!existsSync(svgJsPath)) throw new Error('不存在iconfont.js文件！')
   const content = readFileSync(svgJsPath, { encoding: 'utf-8' })
