@@ -15,7 +15,8 @@ interface BaseOptions {
 
 interface DownloadOptions extends BaseOptions {
   destDir: string,
-  cssFileName: string
+  cssFileName: string,
+  includes?: Array<string>
 }
 
 interface DownloadSvgsOptions extends BaseOptions {
@@ -28,8 +29,8 @@ interface SvgParsed {
   content: string,
 }
 
-function isUsefulFile(filename: string) {
-  return ['.css', '.woff', '.woff2', '.svg', '.ttf'].indexOf(path.extname(filename)) >= 0 && /^iconfont/.test(filename)
+function isUsefulFile(filename: string, includes?: Array<string>) {
+  return includes || ['.css', '.woff', '.woff2', '.ttf', '.js'].indexOf(path.extname(filename)) >= 0 && /^iconfont/.test(filename)
 }
 
 export async function download(options: DownloadOptions) {
@@ -37,7 +38,7 @@ export async function download(options: DownloadOptions) {
   mkdirSync(TEMP(options.pName))
   const dir = await downloadAndUnzip(options.token, options.pid, options.pName)
   readdirSync(dir, { withFileTypes: true })
-    .filter(o => o.isFile() && isUsefulFile(o.name))
+    .filter(o => o.isFile() && isUsefulFile(o.name, options.includes))
     .forEach(o => {
       const copyPath = path.extname(o.name).toLowerCase() === '.css' ? options.cssFileName : o.name
       fs.copyFileSync(path.resolve(dir, o.name), path.resolve(options.destDir, copyPath))
